@@ -1,0 +1,252 @@
+--- a/annual/annual_engine.py
++++ b/annual/annual_engine.py
+@@ -11,6 +11,7 @@
+ import matplotlib
+ matplotlib.use('Agg')
+ import matplotlib.pyplot as plt
++from matplotlib import patheffects
+ from matplotlib.patches import Circle, Wedge, FancyArrowPatch
+ from matplotlib.font_manager import FontProperties
+ from matplotlib.transforms import Bbox
+@@ -48,7 +49,7 @@
+     radius=SPIRAL_OUT-(SPIRAL_OUT-SPIRAL_IN)*np.asarray(days_elapsed)/days
+     return CX+radius*np.cos(theta),CY-radius*np.sin(theta)
+ 
+-from glyph_master import read_master, render_badges
++from glyph_master import FONT_PATH, read_master, render_badges
+ from chiron_ephemeris import calculate_chiron
+ from event_panel import render_panel
+ from outer_start_labels import draw_outer_labels
+@@ -132,13 +133,27 @@
+     sign_text_palette=sign_text_colors(zodiac_rows)
+     signs=('牡羊座','牡牛座','双子座','蟹座','獅子座','乙女座','天秤座','蠍座','射手座','山羊座','水瓶座','魚座')
+     assert len(sign_palette)==12 and set(sign_palette)==set(signs)
++    app_palette = json.loads(Path(__file__).with_name('zodiac-palette.json').read_text(encoding='utf-8'))
++    sign_font = FontProperties(fname=FONT_PATH)
+     sign_text_artists=[]
+     for k,name in enumerate(signs):
++        base = app_palette['signs'][name.removesuffix('座')]
++        weight = app_palette['band']['baseColorWeight']
++        ring_color = '#' + ''.join(
++            f'{round(int(base[i:i+2], 16) * weight + 255 * (1 - weight)):02X}'
++            for i in (1, 3, 5)
++        )
+         a0=(180+30*k)%360
+-        ax.add_patch(Wedge((CX,CY),686,150-30*k,180-30*k,width=73,fc=sign_palette[name],ec='#E9ECEE',lw=.5,zorder=1))
++        ax.add_patch(Wedge((CX,CY),686,150-30*k,180-30*k,width=73,fc=ring_color,ec='#E9ECEE',lw=.5,zorder=1))
+         angle=np.deg2rad(a0+15)
+         tx=CX+649.5*np.cos(angle);ty=CY-649.5*np.sin(angle)
+         sign_text_artists.append(ax.text(tx,ty,name.replace('座',''),fontsize=11,ha='center',va='center',color=sign_text_palette[name],zorder=2))
++        glyph = ax.text(tx,ty,chr(0x2648 + k),fontsize=21,fontproperties=sign_font,ha='center',va='center',color=base,zorder=3)
++        glyph.set_path_effects([patheffects.withStroke(
++            linewidth=app_palette['glyphOutline']['width'],
++            foreground=app_palette['glyphOutline']['color'],
++        )])
++        sign_text_artists[-1].set_alpha(0)
+         spoke=np.deg2rad(a0)
+         ax.plot([CX+116*np.cos(spoke),CX+613*np.cos(spoke)],
+                 [CY-116*np.sin(spoke),CY-613*np.sin(spoke)],color='#E5E8EB',lw=.7,zorder=0)
+@@ -186,7 +201,7 @@
+                             xycoords='data', frameon=False, box_alignment=(.5,.5),
+                             pad=0, zorder=60)
+     ax.add_artist(_brand)
+-    ax.text(190,HEIGHT*(1-TITLE_CENTER_Y_FRAC),f'ホシトウラナイ  ｜  星めぐり天文暦  ｜  {year}年 年間天体運行図',fontsize=TITLE_PT,weight='bold',color='#23374B',va='center')
++    ax.text(190,HEIGHT*(1-TITLE_CENTER_Y_FRAC),f'HOSHITOURANAI  ｜  星めぐり天文暦  ｜  {year}年 年間天体運行図',fontsize=TITLE_PT,weight='bold',color='#23374B',va='center')
+     header_subtitle=f'地心・トロピカル黄道  ｜  日本時間（JST）  ｜  外側：{year}/1/1 → 内側：{year+1}/1/1'
+     ax.text(103,HEIGHT*(1-SUBTITLE_Y_FRAC),header_subtitle,fontsize=SUBTITLE_PT,color='#66788A')
+     panel_audit=render_panel(ax,year,positions,palette,zip_path)
+--- a/annual/event_panel.py
++++ b/annual/event_panel.py
+@@ -1,6 +1,7 @@
+ """v53 annual panel (stage31). Data-derived colored sign glyphs and retrograde state.
+ Events are provisional; no inferred event dates, and never reuse 2027 in another year.
+ """
++import os
+ import csv, io, zipfile
+ from datetime import datetime
+ from matplotlib.patches import FancyBboxPatch
+@@ -13,7 +14,7 @@
+ PLANETS=['金星','火星','木星','土星','天王星','海王星','冥王星']
+ SYMBOLS={'金星':'♀','火星':'♂','木星':'♃','土星':'♄','天王星':'♅','海王星':'♆','冥王星':'♇'}
+ IDS={'金星':swe.VENUS,'火星':swe.MARS,'木星':swe.JUPITER,'土星':swe.SATURN,'天王星':swe.URANUS,'海王星':swe.NEPTUNE,'冥王星':swe.PLUTO}
+-SYMBOL_FONT=FontProperties(fname='/usr/share/fonts/truetype/freefont/FreeSerif.ttf')
++SYMBOL_FONT=FontProperties(fname=os.environ.get('HOSHIMEGURI_SYMBOL_FONT', '/usr/share/fonts/truetype/freefont/FreeSerif.ttf'))
+ JP_FONT=FontProperties(fname='/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc')
+ PALETTE_MASTER='data/ホシトウラナイ_カラー一覧表_試作_v03_白50パーセント.csv'
+ DARK='#243A53'; RED='#CF3B32'; GREEN='#008E80'; PRINT_TEXT='#222222'; ARROW_GRAY='#8A949D'
+--- a/annual/glyph_master.py
++++ b/annual/glyph_master.py
+@@ -1,13 +1,14 @@
+ """Annual v53 appearance policy. Coordinates in chart pixels, not celestial positions.
+ Provisional 2027 layout is intentionally NOT portable to other years.
+ """
++import os
+ import csv
+ from pathlib import Path
+ from matplotlib.patches import Circle
+ from matplotlib.font_manager import FontProperties
+ from pluto_vector import draw_pluto
+ 
+-FONT_PATH='/usr/share/fonts/truetype/freefont/FreeSerif.ttf'
++FONT_PATH=os.environ.get('HOSHIMEGURI_SYMBOL_FONT', '/usr/share/fonts/truetype/freefont/FreeSerif.ttf')
+ BADGE_RADIUS=18.4
+ EXPECTED={'太陽':'☉','水星':'☿','金星':'♀','火星':'♂','木星':'♃','土星':'♄','天王星':'♅','海王星':'♆','冥王星':'♇','ドラゴンヘッド':'☊','キロン':'⚷'}
+ 
+--- a/annual/ink_pixel_audit.py
++++ b/annual/ink_pixel_audit.py
+@@ -1,4 +1,5 @@
+ """Independent raster-ink geometry audit. Measure only glyph ink, not text bbox."""
++import os
+ import numpy as np
+ import matplotlib
+ matplotlib.use('Agg')
+@@ -6,7 +7,7 @@
+ from matplotlib.font_manager import FontProperties
+ from PIL import Image,ImageDraw,ImageFont
+ 
+-FONT='/usr/share/fonts/truetype/freefont/FreeSerif.ttf'
++FONT=os.environ.get('HOSHIMEGURI_SYMBOL_FONT', '/usr/share/fonts/truetype/freefont/FreeSerif.ttf')
+ 
+ def measure_glyph_ink(labels, circles, image_size=(3060,1818), dpi=150):
+     circle_map={n:(x,y,r) for n,x,y,r in circles}
+--- /dev/null
++++ b/annual/zodiac-palette.json
+@@ -0,0 +1,24 @@
++{
++  "signs": {
++    "牡羊": "#ff3035",
++    "牡牛": "#00c06b",
++    "双子": "#ffdc53",
++    "蟹": "#f69abe",
++    "獅子": "#ffb23e",
++    "乙女": "#8dc127",
++    "天秤": "#00cbd0",
++    "蠍": "#cb141b",
++    "射手": "#8647fb",
++    "山羊": "#505050",
++    "水瓶": "#33b7f4",
++    "魚": "#d99be8"
++  },
++  "band": {
++    "background": "#ffffff",
++    "baseColorWeight": 0.2
++  },
++  "glyphOutline": {
++    "color": "#22334c",
++    "width": 1.4
++  }
++}
+--- a/monthly/render_month_COLOR_FLOW_TRIAL.py
++++ b/monthly/render_month_COLOR_FLOW_TRIAL.py
+@@ -10,13 +10,13 @@
+ MONTH=args.month
+ NEXT_MONTH=MONTH%12+1
+ NEXT_YEAR=2027+(MONTH==12)
+-import csv, math
++import csv, math, json, os
+ from datetime import datetime,timedelta,timezone
+ import numpy as np
+ from scipy.optimize import brentq
+ import swisseph as swe
+ 
+-swe.set_ephe_path('/opt/pyvenv/lib/python3.13/site-packages/kerykeion/sweph')
++swe.set_ephe_path(os.environ.get('V53_EPHE_DIR', '/usr/share/swisseph'))
+ import matplotlib; matplotlib.use('Agg')
+ import matplotlib.pyplot as plt
+ from matplotlib.patches import Wedge,Circle,FancyArrowPatch,FancyBboxPatch
+@@ -45,7 +45,7 @@
+ 
+ plt.rcParams['svg.fonttype']='none'
+ plt.rcParams['font.family']='Noto Sans CJK JP'
+-glyph_fp=FontProperties(fname='/usr/share/fonts/truetype/freefont/FreeSerif.ttf')
++glyph_fp=FontProperties(fname=os.environ.get('HOSHIMEGURI_SYMBOL_FONT', '/usr/share/fonts/truetype/freefont/FreeSerif.ttf'))
+ 
+ # palette from approved working master/csv used by v21+v21
+ with (SRC/'ホシトウラナイ_カラー一覧表_試作_v03_白50パーセント.csv').open(encoding='utf-8-sig',newline='') as f:
+@@ -56,7 +56,10 @@
+ def whiten(hexstr, amount=.60):
+     rgb=[int(hexstr[i:i+2],16) for i in (1,3,5)]
+     return '#'+''.join(f'{round(x*(1-amount)+255*amount):02X}' for x in rgb)
+-SIGN_COLORS=[whiten(sign_base[s], .60) for s in SIGNS]
++# App LOCKED palette: base sign color 20%, white 80%.
++APP_PALETTE=json.loads((Path(__file__).resolve().parent/'zodiac-palette.json').read_text(encoding='utf-8'))
++app_sign_base=APP_PALETTE['signs']
++SIGN_COLORS=[whiten(app_sign_base[s], 1 - APP_PALETTE['band']['baseColorWeight']) for s in SIGNS]
+ PC={name:base_color[name] for name,_,_ in PLANETS if name in base_color}
+ PC['ドラゴンヘッド']=base_color.get('ドラゴンヘッド','#B19045')
+ PC['キロン']='#6E7750'
+@@ -318,8 +321,8 @@
+ # The approved v6 icon is used as an image, never redrawn or altered.
+ _icon = Image.open(Path(__file__).resolve().parent/'official_icon_v6.png').convert('RGB').resize((63,63),Image.Resampling.LANCZOS)
+ fig.figimage(np.asarray(_icon), xo=71, yo=round(fig.get_figheight()*160*TITLE_CENTER_Y_FRAC - 63/2), zorder=110, origin='upper')
+-fig.text(.068,TITLE_CENTER_Y_FRAC,f'ホシトウラナイ  ｜  星めぐり天文暦  ｜  2027年 {MONTH}月天体運行図',fontsize=TITLE_PT,fontweight='bold',color=BRAND,ha='left',va='center')
+-fig.text(.034,SUBTITLE_Y_FRAC,f'地心・トロピカル黄道  ｜  日本時間（JST）  ｜  外側：2027年{MONTH}月1日 → 内側：{NEXT_YEAR}年{NEXT_MONTH}月1日',fontsize=SUBTITLE_PT,color=MUTED,ha='left')
++fig.text(.068,TITLE_CENTER_Y_FRAC,f'HOSHITOURANAI  ｜  星めぐり天文暦  ｜  2027年 {MONTH}月天体運行図',fontsize=TITLE_PT,fontweight='bold',color=BRAND,ha='left',va='center')
++fig.text(.034,SUBTITLE_Y_FRAC,f'地心・トロピカル黄道  ｜  日本時間（JST）  ｜  外側：2027年{MONTH}月1日 → 内側：{MONTH}月{DAYS}日 23:59',fontsize=SUBTITLE_PT,color=MUTED,ha='left')
+ 
+ for k,s in enumerate(SIGNS):
+     ax.add_patch(Wedge((0,0),1.134,180+30*k,210+30*k,width=.115,facecolor=SIGN_COLORS[k],edgecolor='white',lw=1.5,zorder=.3))
+@@ -330,8 +333,13 @@
+     ax.plot([x1,x2],[y1,y2],color=GRID,lw=.7,zorder=0)
+ sign_text_artists=[]
+ for k,s in enumerate(SIGNS):
++    # Keep exact original angular coordinates: longitude increases CCW.
+     x,y=xy((k+.5)*30,1.075)
+-    sign_text_artists.append(ax.text(x,y,s,fontsize=11,color='#202e3a',ha='center',va='center',weight='bold',zorder=3))
++    glyph=SIGN_GLYPHS[s]
++    artist=ax.text(x,y,glyph,fontsize=21,fontproperties=glyph_fp,color=app_sign_base[s],ha='center',va='center',zorder=3)
++    artist.set_path_effects([pe.withStroke(linewidth=APP_PALETTE['glyphOutline']['width'],foreground=APP_PALETTE['glyphOutline']['color'])])
++    # Keep legacy text artist invisible for identical bbox collision decisions.
++    sign_text_artists.append(ax.text(x,y,s,fontsize=11,color='#202e3a',ha='center',va='center',weight='bold',alpha=0,zorder=3))
+ ax.add_patch(Circle((0,0),1.015,fill=False,ec=OUTLINE,lw=1.0,zorder=2))
+ ax.add_patch(Circle((0,0),1.135,fill=False,ec=OUTLINE,lw=.8,zorder=2))
+ 
+@@ -354,9 +362,10 @@
+ # paths
+ planet_data={}
+ for name,glyph,_ in PLANETS:
+-    ts=[T0+timedelta(hours=3*i) for i in range(DAYS*8+1)]
++    ts=[T0+timedelta(hours=3*i) for i in range(DAYS*8)]
++    ts.append(T1 - timedelta(minutes=1))
+     ls=[pos(name,t)[0] for t in ts]
+-    rads=np.linspace(OUTER_R,INNER_R,len(ts))
++    rads=[OUTER_R-RAD_SPAN*(t-T0).total_seconds()/(T1-T0).total_seconds() for t in ts]
+     planet_data[name]=(glyph,ts,ls,rads)
+     for seg in split_segments(ls,rads):
+         pts=np.array([xy(l,r) for l,r in seg])
+@@ -573,7 +582,7 @@
+                              moon_fs,gap=.0023)
+     assert moon_cursor<=moon_right+0.00001,('moon overflow',i,moon_cursor)
+ assert moon_line<5, ('moon row overflow',moon_line+1)
+-fig.text(FOOTER_LEFT_X_FRAC,FOOTER_MAIN_Y_FRAC,f'● 始点：2027年{MONTH}月1日   → 矢印先端：{NEXT_YEAR}年{NEXT_MONTH}月1日',fontsize=FOOTER_MAIN_PT,color=INK)
++fig.text(FOOTER_LEFT_X_FRAC,FOOTER_MAIN_Y_FRAC,f'● 始点：2027年{MONTH}月1日   → 矢印先端：{MONTH}月{DAYS}日 23:59',fontsize=FOOTER_MAIN_PT,color=INK)
+ fig.text(.365,FOOTER_MAIN_Y_FRAC,'点線＝新月　／　実線＝満月',fontsize=FOOTER_MAIN_PT,color=INK)
+ fig.text(FOOTER_LEFT_X_FRAC,FOOTER_SOURCE_Y_FRAC,'出典・検証：Swiss Ephemeris（Moshier方式）',fontsize=FOOTER_SOURCE_PT,color=MUTED)
+ for stem in [f'2027年{MONTH:02d}月_v16_年間共通候補']:
+--- /dev/null
++++ b/monthly/zodiac-palette.json
+@@ -0,0 +1,24 @@
++{
++  "signs": {
++    "牡羊": "#ff3035",
++    "牡牛": "#00c06b",
++    "双子": "#ffdc53",
++    "蟹": "#f69abe",
++    "獅子": "#ffb23e",
++    "乙女": "#8dc127",
++    "天秤": "#00cbd0",
++    "蠍": "#cb141b",
++    "射手": "#8647fb",
++    "山羊": "#505050",
++    "水瓶": "#33b7f4",
++    "魚": "#d99be8"
++  },
++  "band": {
++    "background": "#ffffff",
++    "baseColorWeight": 0.2
++  },
++  "glyphOutline": {
++    "color": "#22334c",
++    "width": 1.4
++  }
++}
