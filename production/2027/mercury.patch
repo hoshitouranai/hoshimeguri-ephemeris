@@ -1,0 +1,11 @@
+--- a/render_mercury.py
++++ b/render_mercury.py
+@@ -36,7 +36,7 @@
+         x=centered_text(x,cy,glyph,glyphfont,c)+6
+         return centered_text(x,cy,sign+'座',font(24),COL['navy'])
+     im.paste(Image.open(icon_path).convert('RGB').resize((68,68),Image.Resampling.LANCZOS),(101,65))
+-    title=f"ホシトウラナイ  │  星めぐり天文暦  │  {data['year']}年 水星の運行詳細"
++    title=f"HOSHITOURANAI  │  星めぐり天文暦  │  {data['year']}年 水星の運行詳細"
+     centered_text(197,99,title,font(40,True),COL['ink'])
+     count=sum(e['kind'] in ('sign','sign_R') for e in events)
+     d.text((101,157),f'サイン移動{count}件＋留{len(events)-count}件  │  日本標準時 JST  │  地心・トロピカル黄道',font=font(20),fill='#65705D')
