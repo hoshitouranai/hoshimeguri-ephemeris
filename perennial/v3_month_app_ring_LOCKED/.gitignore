@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+output/
+data/*_自動計算*.csv
+cover/output/

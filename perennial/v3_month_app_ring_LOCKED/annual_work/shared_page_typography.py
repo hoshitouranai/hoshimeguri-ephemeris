@@ -1,0 +1,10 @@
+"""Shared annual/monthly page typography rules; approved layouts are retained."""
+TITLE_PT = 20.0
+SUBTITLE_PT = 10.2
+FOOTER_MAIN_PT = 11.5
+FOOTER_SOURCE_PT = 10.0
+TITLE_CENTER_Y_FRAC = 0.965
+SUBTITLE_Y_FRAC = 0.923
+FOOTER_MAIN_Y_FRAC = 0.059
+FOOTER_SOURCE_Y_FRAC = 0.032
+FOOTER_LEFT_X_FRAC = 0.028
