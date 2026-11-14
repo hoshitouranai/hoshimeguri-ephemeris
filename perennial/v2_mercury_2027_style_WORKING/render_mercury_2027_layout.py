@@ -64,7 +64,7 @@ def draw_table(d,rows,left,top,bottom=537):
  rect(d,(x,top,x+width,top+32),HEAD)
  edges=[x+12,x+81,x+151,x+330,x+403]
  for px,h in zip(edges,['日付','時刻','サイン','度数','天体の動き']):text(d,px,top+8,h,12,bold=True)
- row_h=32;start=top+32
+ row_h=min(32,(bottom-(top+32))/max(1,len(rows)));start=top+32
  for i,row in enumerate(rows):
   y=start+i*row_h
   if i%2:rect(d,(x+1,y,x+width-1,y+row_h),ALT)
@@ -84,7 +84,7 @@ def make(year,source,out):
   rows=list(csv.DictReader(f))
  if not rows or any(int(r['年'])!=year for r in rows):raise ValueError('CSV does not match requested year')
  rows.sort(key=lambda x:x['日時_JST'])
- if len(rows)>24:raise ValueError('2027 layout accommodates at most 24 rows; rendering stops rather than silently losing events')
+ if len(rows)>36:raise ValueError('At most 36 Mercury events fit on one page; rendering stops rather than silently losing events')
  img=Image.new('RGB',(W,H),BG);d=ImageDraw.Draw(img)
  logo=Image.open(SRC/'icon_2027_original.png').convert('RGB');logo=logo.resize(pt(40,40),Image.Resampling.LANCZOS)
  img.paste(logo,pt(59,37))

@@ -1,0 +1,174 @@
+{
+  "status": "WORKING—not LOCKED",
+  "test_date": "2026-11-15 JST",
+  "counts": {
+    "png_files_checked": 30,
+    "png_sha256_matched": 30
+  },
+  "runs": {
+    "2028": "all 12 months and annual built; one-shot timed out after Annual OK; Mercury and cover independently generated",
+    "2029": "12 months split into two batches, annual + Mercury + cover individually completed; one-shot --months 2 finished successfully"
+  },
+  "mercury_event_count": {
+    "2028": 19,
+    "2029": 22
+  },
+  "overflow_checks": {
+    "25_rows": "PASS",
+    "36_rows": "PASS",
+    "37_rows": "explicit FAIL/no truncation"
+  },
+  "source_integrity": "Locked v1 unmodified; v2 overlay modified only for row count >24",
+  "images": [
+    {
+      "year": 2028,
+      "name": "2028年01月_v16_年間共通候補.png",
+      "match": true
+    },
+    {
+      "year": 2028,
+      "name": "2028年02月_v16_年間共通候補.png",
+      "match": true
+    },
+    {
+      "year": 2028,
+      "name": "2028年03月_v16_年間共通候補.png",
+      "match": true
+    },
+    {
+      "year": 2028,
+      "name": "2028年04月_v16_年間共通候補.png",
+      "match": true
+    },
+    {
+      "year": 2028,
+      "name": "2028年05月_v16_年間共通候補.png",
+      "match": true
+    },
+    {
+      "year": 2028,
+      "name": "2028年06月_v16_年間共通候補.png",
+      "match": true
+    },
+    {
+      "year": 2028,
+      "name": "2028年07月_v16_年間共通候補.png",
+      "match": true
+    },
+    {
+      "year": 2028,
+      "name": "2028年08月_v16_年間共通候補.png",
+      "match": true
+    },
+    {
+      "year": 2028,
+      "name": "2028年09月_v16_年間共通候補.png",
+      "match": true
+    },
+    {
+      "year": 2028,
+      "name": "2028年10月_v16_年間共通候補.png",
+      "match": true
+    },
+    {
+      "year": 2028,
+      "name": "2028年11月_v16_年間共通候補.png",
+      "match": true
+    },
+    {
+      "year": 2028,
+      "name": "2028年12月_v16_年間共通候補.png",
+      "match": true
+    },
+    {
+      "year": 2028,
+      "name": "2028_annual.png",
+      "match": true
+    },
+    {
+      "year": 2028,
+      "name": "星めぐり天文暦2028_表紙B案_採用版.png",
+      "match": true
+    },
+    {
+      "year": 2028,
+      "name": "2028_水星の運行詳細_2027年版統一.png",
+      "match": true
+    },
+    {
+      "year": 2029,
+      "name": "2029年01月_v16_年間共通候補.png",
+      "match": true
+    },
+    {
+      "year": 2029,
+      "name": "2029年02月_v16_年間共通候補.png",
+      "match": true
+    },
+    {
+      "year": 2029,
+      "name": "2029年03月_v16_年間共通候補.png",
+      "match": true
+    },
+    {
+      "year": 2029,
+      "name": "2029年04月_v16_年間共通候補.png",
+      "match": true
+    },
+    {
+      "year": 2029,
+      "name": "2029年05月_v16_年間共通候補.png",
+      "match": true
+    },
+    {
+      "year": 2029,
+      "name": "2029年06月_v16_年間共通候補.png",
+      "match": true
+    },
+    {
+      "year": 2029,
+      "name": "2029年07月_v16_年間共通候補.png",
+      "match": true
+    },
+    {
+      "year": 2029,
+      "name": "2029年08月_v16_年間共通候補.png",
+      "match": true
+    },
+    {
+      "year": 2029,
+      "name": "2029年09月_v16_年間共通候補.png",
+      "match": true
+    },
+    {
+      "year": 2029,
+      "name": "2029年10月_v16_年間共通候補.png",
+      "match": true
+    },
+    {
+      "year": 2029,
+      "name": "2029年11月_v16_年間共通候補.png",
+      "match": true
+    },
+    {
+      "year": 2029,
+      "name": "2029年12月_v16_年間共通候補.png",
+      "match": true
+    },
+    {
+      "year": 2029,
+      "name": "2029_annual.png",
+      "match": true
+    },
+    {
+      "year": 2029,
+      "name": "星めぐり天文暦2029_表紙B案_採用版.png",
+      "match": true
+    },
+    {
+      "year": 2029,
+      "name": "2029_水星の運行詳細_2027年版統一.png",
+      "match": true
+    }
+  ]
+}
