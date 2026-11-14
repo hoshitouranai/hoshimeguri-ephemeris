@@ -1,0 +1,48 @@
+{
+  "repo": "hoshitouranai/hoshimeguri-ephemeris",
+  "commit": "caf3985db3ced037f4c5e972dacf7428cc71b509",
+  "verified_git_blobs": "56/56",
+  "scope": "git blob sha1 compare of all 56 source/assets; local mirror reconstructed from original and compact palette; end-to-end month January for 2028/2029",
+  "png_reproduction": {
+    "output/2028_annual.png": {
+      "sha256_lock": "a03a9b543bf5d1215f42a5d0466db22ee6b08bd1e790678852c6615bc7a81370",
+      "sha256_mirror": "a03a9b543bf5d1215f42a5d0466db22ee6b08bd1e790678852c6615bc7a81370",
+      "identical": true
+    },
+    "output/2028年01月_v16_年間共通候補.png": {
+      "sha256_lock": "9f1cd5d8f82ead943f08022c959b9be8bff37fac501a7f470b622958cf9043c6",
+      "sha256_mirror": "9f1cd5d8f82ead943f08022c959b9be8bff37fac501a7f470b622958cf9043c6",
+      "identical": true
+    },
+    "output/2028_水星年間運行詳細_ヘッド_キロン_WORKING.png": {
+      "sha256_lock": "163dde81da199c03e025711c17d13374e036809cff3f0bacf1ad9fa8a96a523a",
+      "sha256_mirror": "163dde81da199c03e025711c17d13374e036809cff3f0bacf1ad9fa8a96a523a",
+      "identical": true
+    },
+    "cover/output/星めぐり天文暦2028_表紙B案_採用版.png": {
+      "sha256_lock": "082ed7c89d17ad7d3c77b81ab2824fbe6e987e183b9e22062be33dd83cba6f9a",
+      "sha256_mirror": "082ed7c89d17ad7d3c77b81ab2824fbe6e987e183b9e22062be33dd83cba6f9a",
+      "identical": true
+    },
+    "output/2029_annual.png": {
+      "sha256_lock": "52869a6a77a3ca1e05023c9239ab004cb8c6f316c22c0cb67eaa1cb29c87be87",
+      "sha256_mirror": "52869a6a77a3ca1e05023c9239ab004cb8c6f316c22c0cb67eaa1cb29c87be87",
+      "identical": true
+    },
+    "output/2029年01月_v16_年間共通候補.png": {
+      "sha256_lock": "a4c6dcc885b2493774407f59aec6b952e768de50b9f7ad807a831914f7820753",
+      "sha256_mirror": "a4c6dcc885b2493774407f59aec6b952e768de50b9f7ad807a831914f7820753",
+      "identical": true
+    },
+    "output/2029_水星年間運行詳細_ヘッド_キロン_WORKING.png": {
+      "sha256_lock": "f3ce8fdc5013a850163eae786879952031d45d0dcea524fc18385b76f0a5fc15",
+      "sha256_mirror": "f3ce8fdc5013a850163eae786879952031d45d0dcea524fc18385b76f0a5fc15",
+      "identical": true
+    },
+    "cover/output/星めぐり天文暦2029_表紙B案_採用版.png": {
+      "sha256_lock": "ab06fd1ecf1ce8212089662a21275a6e2d43809d0035f116d9770cfbe09d23f3",
+      "sha256_mirror": "ab06fd1ecf1ce8212089662a21275a6e2d43809d0035f116d9770cfbe09d23f3",
+      "identical": true
+    }
+  }
+}
