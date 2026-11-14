@@ -1,0 +1,53 @@
+{
+  "status": "WORKING_NOT_LOCKED",
+  "checked_month": "2027-01",
+  "original_source": "月別v17 LOCKED ZIP / render_month_LOCKED.py",
+  "source_unchanged": true,
+  "app_palette_source": "single chart LOCKED / zodiac-palette.json",
+  "modified_scope": "Only zodiac band pastel and outer zodiac glyphs. Angular mapping and all astronomical paths unchanged.",
+  "counterclockwise_order": [
+    "牡羊",
+    "牡牛",
+    "双子",
+    "蟹",
+    "獅子",
+    "乙女",
+    "天秤",
+    "蠍",
+    "射手",
+    "山羊",
+    "水瓶",
+    "魚"
+  ],
+  "counterclockwise_angle_increments_degrees": 30,
+  "pixel_diff": {
+    "changed_pixels": 246478,
+    "interior_r_less_than_570": 0,
+    "far_outer_r_greater_than_670": 0,
+    "note": "Pixel center (795,889) and annulus bounds apply to the 2864x1760 full source PNG. All changed pixels confined to annulus."
+  },
+  "not_checked": [
+    "annual chart Python renderer",
+    "2027 entire 12 months",
+    "month endpoint correction",
+    "independent astronomical validation",
+    "A4 physical print readability",
+    "sale approval"
+  ],
+  "sha256": {
+    "render_month_LOCKED.py": "13f399d96329038c6fb324d3eece4d6a662cca10958389b73d3947e64a95119e",
+    "zodiac-palette.json": "430d2e2822d65ac5e44903b3de80ed41430fe6b88b4a3a1f518d033c51d91b21",
+    "time_rules_LOCKED.py": "aa8a0e23cadd63c6ba19df52f4510769cf3826741fd1e1a6afb06eb9b7140502",
+    "2027_主要9天体イベント統合マスター_69件_v16.csv": "812ce913851e0dfc8bfa4b40aa438e1d851511d9fa539108e5d6d4750c3eb1ee",
+    "2027_日食月食_最大時刻_NASA_JST.csv": "0c4065c40c7d77f10fa31673eb8d85efbadce055ab529f353cd4b62957cee878",
+    "2027_月サイン移動_Moshier暫定.csv": "26e74b15e105e237973b3360a31c2577387a4e964eb218fc4294f020d1d56fb5",
+    "ホシトウラナイ_カラー一覧表_試作_v03_白50パーセント.csv": "7163a04026d738ca1ffa672dd999073515abec9bc3207a7e8c2e0823410e23d9",
+    "2027年01月_v16_年間共通候補.png": "e9774862938a4868e3d6593fde7e20b697a4872dd3752e3cdc3530cb0e72b40f",
+    "星めぐり天文暦2027_1月Python外周比較_未承認.pdf": "abe4ca5bd60f1cf51bb9551244b9e715180cb016796addd79f2af70f9a4bdf82"
+  },
+  "restore_test": {
+    "reextraction_sha256": "PASS",
+    "regenerated_with_saved_source_data": "PASS",
+    "png_sha256": "d25e930ef33e41cc9aac8e55b068f1ebc335a82381737265d38c0ed3f50200f0"
+  }
+}
